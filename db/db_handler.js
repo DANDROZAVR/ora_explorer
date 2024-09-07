@@ -30,8 +30,6 @@ export async function getResponseActivity(offset = 0) {
   return result.rows;
 }
 
-// db/db_handler.js
-
 export async function getRequestById(id) {
   const result = await pool.query('SELECT * FROM prompt_requests WHERE tx_id = $1', [id]);
   return result.rows[0];
@@ -43,24 +41,23 @@ export async function getResponseById(id) {
 }
 
 export async function getBlockInfo(tx_id) {
-  // Function to get block information
   const query = `
-    SELECT * FROM prompt_requests WHERE tx_id = $1
+    SELECT tx_id, req_id, chain_id, user_address, text, timestamp, 'request' AS type FROM prompt_requests WHERE tx_id = $1
     UNION ALL
-    SELECT * FROM prompt_answers WHERE tx_id = $1
+    SELECT tx_id, req_id, chain_id, user_address, text, timestamp, 'response' AS type FROM prompt_answers WHERE tx_id = $1
   `;
   const result = await global_pool.query(query, [tx_id]);
   return result.rows[0]; // Return the first result
 }
 
-export async function getOppositeTransaction(request_id) {
-  // Function to get opposite request or response
+export async function getOppositeTransaction(request_id, original_type) {
+  const table = original_type != 'request' ? 'prompt_requests' : 'prompt_answers';
   const query = `
-    SELECT tx_id FROM prompt_requests WHERE req_id = $1
-    UNION
-    SELECT tx_id FROM prompt_answers WHERE req_id = $1
+    SELECT tx_id FROM ${table} WHERE req_id = $1
   `;
   const result = await global_pool.query(query, [request_id]);
+  if (result.rows.length == 0) {
+    return null
+  }
   return result.rows[0]; // Return the first result
 }
-

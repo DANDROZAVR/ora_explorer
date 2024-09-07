@@ -3,22 +3,43 @@ import Link from 'next/link';
 
 export default function BlockInfo({ block }) {
   const [blockInfo, setBlockInfo] = useState(null);
+  const [oppositeInfo, setOppositeInfo] = useState(null);
 
   useEffect(() => {
     async function fetchBlockInfo() {
-      const res = await fetch(`/api/block/${block}`);
-      if (res.ok) {
-        const data = await res.json();
-        setBlockInfo(data);
+      try {
+        const res = await fetch(`/api/block/${block}`);
+        if (res.ok) {
+          const data = await res.json();
+          console.log('Block info data:', data); // Debugging line
+          setBlockInfo(data);
+
+          if (data.opposite) {
+            setOppositeInfo(data.opposite);
+          }
+        } else {
+          console.error('Failed to fetch block info');
+        }
+      } catch (error) {
+        console.error('Error fetching block info:', error);
       }
     }
 
     fetchBlockInfo();
   }, [block]);
 
+  const getOppositeLink = () => {
+    if (oppositeInfo) {
+      return `/block/${oppositeInfo.tx_id}`;
+    }
+    return null;
+  };
+
+  const buttonText = blockInfo?.type === 'request' ? 'Check Response Info' : 'Check Request Info';
+
   return (
     <div className="block-info-page">
-      <h1>Block Information</h1>
+      <h1>{blockInfo?.type === 'request' ? 'Request Information' : 'Response Information'}</h1>
       {blockInfo ? (
         <div>
           <p><strong>TX ID:</strong> {blockInfo.tx_id}</p>
@@ -26,11 +47,11 @@ export default function BlockInfo({ block }) {
           <p><strong>Address:</strong> {blockInfo.user_address}</p>
           <p><strong>Text:</strong> {blockInfo.text}</p>
           <p><strong>Timestamp:</strong> {blockInfo.timestamp}</p>
-          {blockInfo.opposite ? (
+          {oppositeInfo ? (
             <div>
               <p><strong>Opposite Transaction:</strong></p>
-              <Link href={`/block/${blockInfo.opposite.tx_id}`}>
-                <span className="button">Check Opposite Block</span>
+              <Link href={getOppositeLink()}>
+                <span className="button">{buttonText}</span>
               </Link>
             </div>
           ) : (
@@ -52,7 +73,6 @@ export default function BlockInfo({ block }) {
           text-decoration: none;
           border-radius: 5px;
           font-weight: bold;
-          cursor: pointer;
         }
         .button:hover {
           background-color: #005bb5;
