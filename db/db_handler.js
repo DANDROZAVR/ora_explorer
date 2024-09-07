@@ -1,7 +1,5 @@
 // lib/db.js
 
-
-// Fetch requests
 import {global_pool} from "./pool";
 
 // Get request activities with request_id
@@ -29,22 +27,24 @@ export async function getResponseActivity(offset = 0) {
   const result = await global_pool.query(query, values);
   return result.rows;
 }
-
 export async function getRequestById(id) {
-  const result = await pool.query('SELECT * FROM prompt_requests WHERE tx_id = $1', [id]);
+  const result = await global_pool.query('SELECT tx_id, req_id, chain_id, user_address, text, block_number FROM prompt_requests WHERE tx_id = $1', [id]);
   return result.rows[0];
 }
 
 export async function getResponseById(id) {
-  const result = await pool.query('SELECT * FROM prompt_answers WHERE tx_id = $1', [id]);
+  const result = await global_pool.query('SELECT tx_id, req_id, chain_id, user_address, text, block_number FROM prompt_answers WHERE tx_id = $1', [id]);
   return result.rows[0];
 }
 
 export async function getBlockInfo(tx_id) {
+  // Function to get block information
   const query = `
-    SELECT tx_id, req_id, chain_id, user_address, text, timestamp, 'request' AS type FROM prompt_requests WHERE tx_id = $1
+    SELECT 'request' AS type, tx_id, req_id, chain_id, user_address, text, block_number, timestamp
+    FROM prompt_requests WHERE tx_id = $1
     UNION ALL
-    SELECT tx_id, req_id, chain_id, user_address, text, timestamp, 'response' AS type FROM prompt_answers WHERE tx_id = $1
+    SELECT 'response' AS type, tx_id, req_id, chain_id, user_address, text, block_number, timestamp
+    FROM prompt_answers WHERE tx_id = $1
   `;
   const result = await global_pool.query(query, [tx_id]);
   return result.rows[0]; // Return the first result
@@ -59,5 +59,5 @@ export async function getOppositeTransaction(request_id, original_type) {
   if (result.rows.length == 0) {
     return null
   }
-  return result.rows[0]; // Return the first result
+  return result.rows[0];
 }

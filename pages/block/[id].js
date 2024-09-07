@@ -35,7 +35,15 @@ export default function BlockInfo({ block }) {
     return null;
   };
 
-  const buttonText = blockInfo?.type === 'request' ? 'Check Response Info' : 'Check Request Info';
+  const getOppositeText = () => {
+    if (blockInfo?.type === 'request') {
+      return 'Check Response Info';
+    }
+    if (blockInfo?.type === 'response') {
+      return 'Check Request Info';
+    }
+    return 'Check Opposite Info';
+  };
 
   return (
     <div className="block-info-page">
@@ -46,12 +54,13 @@ export default function BlockInfo({ block }) {
           <p><strong>Chain ID:</strong> {blockInfo.chain_id}</p>
           <p><strong>Address:</strong> {blockInfo.user_address}</p>
           <p><strong>Text:</strong> {blockInfo.text}</p>
-          <p><strong>Timestamp:</strong> {blockInfo.timestamp}</p>
+          <p><strong>Block Number:</strong> {blockInfo.block_number}</p>
+          <p><strong>Timestamp:</strong> {new Date(blockInfo.timestamp * 1000).toLocaleString()}</p>
           {oppositeInfo ? (
             <div>
               <p><strong>Opposite Transaction:</strong></p>
               <Link href={getOppositeLink()}>
-                <span className="button">{buttonText}</span>
+                <span className="button">{getOppositeText()}</span>
               </Link>
             </div>
           ) : (
