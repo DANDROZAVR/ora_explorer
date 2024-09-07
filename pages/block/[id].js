@@ -30,7 +30,7 @@ export default function BlockInfo({ block }) {
             <div>
               <p><strong>Opposite Transaction:</strong></p>
               <Link href={`/block/${blockInfo.opposite.tx_id}`}>
-                <a className="button">Check Opposite Block</a>
+                <span className="button">Check Opposite Block</span>
               </Link>
             </div>
           ) : (
@@ -44,7 +44,7 @@ export default function BlockInfo({ block }) {
         .block-info-page {
           padding: 2rem;
         }
-        a.button {
+        .button {
           display: inline-block;
           padding: 10px 20px;
           background-color: #0070f3;
@@ -52,8 +52,9 @@ export default function BlockInfo({ block }) {
           text-decoration: none;
           border-radius: 5px;
           font-weight: bold;
+          cursor: pointer;
         }
-        a.button:hover {
+        .button:hover {
           background-color: #005bb5;
         }
       `}</style>

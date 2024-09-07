@@ -49,7 +49,7 @@ export async function getBlockInfo(tx_id) {
     UNION ALL
     SELECT * FROM prompt_answers WHERE tx_id = $1
   `;
-  const result = await pool.query(query, [tx_id]);
+  const result = await global_pool.query(query, [tx_id]);
   return result.rows[0]; // Return the first result
 }
 
@@ -60,7 +60,7 @@ export async function getOppositeTransaction(request_id) {
     UNION
     SELECT tx_id FROM prompt_answers WHERE req_id = $1
   `;
-  const result = await pool.query(query, [request_id]);
+  const result = await global_pool.query(query, [request_id]);
   return result.rows[0]; // Return the first result
 }
 
