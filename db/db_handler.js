@@ -3,7 +3,6 @@
 
 // Fetch requests
 import {global_pool} from "./pool";
-import pool from './pool';
 
 // Get request activities with request_id
 export async function getRequestActivity(offset = 0) {
