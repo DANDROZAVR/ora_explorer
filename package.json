@@ -12,6 +12,8 @@
     "next": "13.x",
     "react": "18.x",
     "react-dom": "18.x",
-      "@vercel/postgres": "^0.10.0"
+    "pg": "^8.7.1",
+    "web3": "4.8.0",
+    "dotenv": "^16.0.0"
   }
 }
