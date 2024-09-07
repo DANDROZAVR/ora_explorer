@@ -1,3 +1,4 @@
+// components/ActivityColumn.js
 import Link from 'next/link';
 
 export default function ActivityColumn({ title, activities }) {
@@ -10,7 +11,7 @@ export default function ActivityColumn({ title, activities }) {
           <p><strong>Address:</strong> {activity.user_address}</p>
           <p><strong>Request ID:</strong> {activity.req_id}</p>
           <p><strong>Tx ID:</strong>
-            <Link href={`/block/${activity.tx_id}`} legacyBehavior>
+            <Link href={`/event/${activity.tx_id}`} legacyBehavior>
               <a className="info-link">{activity.tx_id}</a>
             </Link>
           </p>
@@ -28,6 +29,9 @@ export default function ActivityColumn({ title, activities }) {
           padding: 0.5rem;
           border: 1px solid #ddd;
           border-radius: 4px;
+          height: 210px;  
+          background: rgba(255, 255, 255, 0.3); /* 30% white */
+          backdrop-filter: blur(5px); /* Optional: to enhance transparency effect */
         }
         .activity-text {
           font-size: 0.875rem; /* Adjust font size as needed */

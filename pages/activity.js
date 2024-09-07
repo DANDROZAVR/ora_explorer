@@ -1,3 +1,4 @@
+// pages/activity.js
 import { useEffect, useState, useRef, useCallback } from 'react';
 import ActivityColumn from '../components/ActivityColumn';
 

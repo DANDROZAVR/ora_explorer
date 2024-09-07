@@ -5,8 +5,8 @@ export default function Home() {
   return (
     <div className="homepage">
       <Navbar />
-      <h1>Welcome to AI Blockchain Explorer</h1>
-      <p>This explorer lets you search, view recent activities, and explore AI-blockchain-related data.</p>
+      <h1>Welcome to ORA AI Blockchain Explorer</h1>
+      <p>This explorer lets you search for responses and requests from ORA network, view recent activities, and explore AI-blockchain-related data.</p>
 
       <style jsx>{`
         .homepage {

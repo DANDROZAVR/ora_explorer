@@ -1,4 +1,4 @@
-// lib/db.js
+// db/db_handler.js
 
 import {global_pool} from "./pool";
 
@@ -37,8 +37,8 @@ export async function getResponseById(id) {
   return result.rows[0];
 }
 
-export async function getBlockInfo(tx_id) {
-  // Function to get block information
+export async function getEventInfo(tx_id) {
+  // Function to get event information
   const query = `
     SELECT 'request' AS type, tx_id, req_id, chain_id, user_address, text, block_number, timestamp
     FROM prompt_requests WHERE tx_id = $1

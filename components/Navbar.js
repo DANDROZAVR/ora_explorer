@@ -11,20 +11,27 @@ export default function Navbar() {
       </ul>
       <style jsx>{`
         nav {
-          background: #333;
-          padding: 1rem;
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          z-index: 1000; /* Keep text on top of the background */
         }
         ul {
           list-style: none;
           display: flex;
-          justify-content: space-around;
+          margin: 0;
+          padding: 0;
         }
         li {
-          margin: 0 1rem;
+          margin: 0 1.5rem;
         }
         a {
-          color: white;
+          color: #000; /* Text color black */
           text-decoration: none;
+          font-size: 1.5rem; /* Larger font size */
+        }
+        a:hover {
+          color: #555; /* Darker color on hover */
         }
       `}</style>
     </nav>

@@ -1,61 +1,62 @@
+// event/[id].js
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function BlockInfo({ block }) {
-  const [blockInfo, setBlockInfo] = useState(null);
+export default function EventInfo({ event }) {
+  const [eventInfo, setEventInfo] = useState(null);
   const [oppositeInfo, setOppositeInfo] = useState(null);
 
   useEffect(() => {
-    async function fetchBlockInfo() {
+    async function fetchEventInfo() {
       try {
-        const res = await fetch(`/api/block/${block}`);
+        const res = await fetch(`/api/event/${event}`);
         if (res.ok) {
           const data = await res.json();
-          console.log('Block info data:', data); // Debugging line
-          setBlockInfo(data);
+          console.log('Event info data:', data); // Debugging line
+          setEventInfo(data);
 
           if (data.opposite) {
             setOppositeInfo(data.opposite);
           }
         } else {
-          console.error('Failed to fetch block info');
+          console.error('Failed to fetch event info');
         }
       } catch (error) {
-        console.error('Error fetching block info:', error);
+        console.error('Error fetching event info:', error);
       }
     }
 
-    fetchBlockInfo();
-  }, [block]);
+    fetchEventInfo();
+  }, [event]);
 
   const getOppositeLink = () => {
     if (oppositeInfo) {
-      return `/block/${oppositeInfo.tx_id}`;
+      return `/event/${oppositeInfo.tx_id}`;
     }
     return null;
   };
 
   const getOppositeText = () => {
-    if (blockInfo?.type === 'request') {
+    if (eventInfo?.type === 'request') {
       return 'Check Response Info';
     }
-    if (blockInfo?.type === 'response') {
+    if (eventInfo?.type === 'response') {
       return 'Check Request Info';
     }
     return 'Check Opposite Info';
   };
 
   return (
-    <div className="block-info-page">
-      <h1>{blockInfo?.type === 'request' ? 'Request Information' : 'Response Information'}</h1>
-      {blockInfo ? (
+    <div className="event-info-page">
+      <h1>{eventInfo?.type === 'request' ? 'Request Information' : 'Response Information'}</h1>
+      {eventInfo ? (
         <div>
-          <p><strong>TX ID:</strong> {blockInfo.tx_id}</p>
-          <p><strong>Chain ID:</strong> {blockInfo.chain_id}</p>
-          <p><strong>Address:</strong> {blockInfo.user_address}</p>
-          <p><strong>Text:</strong> {blockInfo.text}</p>
-          <p><strong>Block Number:</strong> {blockInfo.block_number}</p>
-          <p><strong>Timestamp:</strong> {new Date(blockInfo.timestamp * 1000).toLocaleString()}</p>
+          <p><strong>TX ID:</strong> {eventInfo.tx_id}</p>
+          <p><strong>Chain ID:</strong> {eventInfo.chain_id}</p>
+          <p><strong>Address:</strong> {eventInfo.user_address}</p>
+          <p><strong>Text:</strong> {eventInfo.text}</p>
+          <p><strong>Block Number:</strong> {eventInfo.event_number}</p>
+          <p><strong>Timestamp:</strong> {new Date(eventInfo.timestamp * 1000).toLocaleString()}</p>
           {oppositeInfo ? (
             <div>
               <p><strong>Opposite Transaction:</strong></p>
@@ -71,7 +72,7 @@ export default function BlockInfo({ block }) {
         <p>Loading...</p>
       )}
       <style jsx>{`
-        .block-info-page {
+        .event-info-page {
           padding: 2rem;
         }
         .button {
@@ -91,8 +92,8 @@ export default function BlockInfo({ block }) {
   );
 }
 
-// Fetch block info server-side for initial render
+// Fetch txn info server-side for initial render
 export async function getServerSideProps(context) {
   const { id } = context.query;
-  return { props: { block: id } };
+  return { props: { event: id } };
 }
