@@ -1,8 +1,13 @@
 // pages/activity.js
+// pages/activities.js
+import { useRouter } from 'next/router';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import ActivityColumn from '../components/ActivityColumn';
 
 export default function Activity() {
+  const router = useRouter();
+  const { address } = router.query;
+
   const [requestActivities, setRequestActivities] = useState([]);
   const [responseActivities, setResponseActivities] = useState([]);
   const [requestOffset, setRequestOffset] = useState(0);
@@ -16,8 +21,11 @@ export default function Activity() {
   const fetchActivities = async (offset, type) => {
     try {
       setLoading(true);
-
-      const res = await fetch(`/api/activity/${type}?offset=${offset}`);
+      let url = `/api/activity/${type}?offset=${offset}`
+      if (address !== "undefined" && address !== "" && address) {
+        url += `&address=${address}`
+      }
+      const res = await fetch(url);
       if (!res.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -52,7 +60,7 @@ export default function Activity() {
     if (newRequests.length === 0 && newResponses.length === 0) {
       setHasMore(false);
     }
-  }, [requestOffset, responseOffset, hasMore]);
+  }, [requestOffset, responseOffset, hasMore, address]);
 
   // Observer callback to trigger fetching more activities
   const lastActivityRef = useCallback(
@@ -74,7 +82,7 @@ export default function Activity() {
   useEffect(() => {
     // Initial data fetch
     loadMoreActivities();
-  }, []);
+  }, [address]);
 
   if (loading && requestActivities.length === 0 && responseActivities.length === 0) {
     return <p>Loading activities...</p>;

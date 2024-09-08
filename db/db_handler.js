@@ -3,30 +3,35 @@
 import {global_pool} from "./pool";
 
 // Get request activities with request_id
-export async function getRequestActivity(offset = 0) {
-  const query = `
+// db/db_handler.js
+
+// Add a filter for address if provided
+export async function getRequestActivity(offset = 0, address = null) {
+  let query = `
     SELECT tx_id, req_id, chain_id, user_address, text, timestamp
     FROM prompt_requests
+    WHERE ($1::text IS NULL OR user_address = $1)
     ORDER BY timestamp DESC
-    LIMIT 20 OFFSET $1
+    LIMIT 20 OFFSET $2
   `;
-  const values = [offset];
+  const values = [address, offset];
   const result = await global_pool.query(query, values);
   return result.rows;
 }
 
-// Get response activities with request_id
-export async function getResponseActivity(offset = 0) {
-  const query = `
+export async function getResponseActivity(offset = 0, address = null) {
+  let query = `
     SELECT tx_id, req_id, chain_id, user_address, text, timestamp
     FROM prompt_answers
+    WHERE ($1::text IS NULL OR user_address = $1)
     ORDER BY timestamp DESC
-    LIMIT 20 OFFSET $1
+    LIMIT 20 OFFSET $2
   `;
-  const values = [offset];
+  const values = [address, offset];
   const result = await global_pool.query(query, values);
   return result.rows;
 }
+
 export async function getRequestById(id) {
   const result = await global_pool.query('SELECT tx_id, req_id, chain_id, user_address, text, block_number FROM prompt_requests WHERE tx_id = $1', [id]);
   return result.rows[0];
