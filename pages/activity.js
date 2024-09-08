@@ -1,30 +1,34 @@
-// pages/activity.js
-// pages/activities.js
 import { useRouter } from 'next/router';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import ActivityColumn from '../components/ActivityColumn';
 
 export default function Activity() {
   const router = useRouter();
+
   const { address } = router.query;
 
   const [requestActivities, setRequestActivities] = useState([]);
   const [responseActivities, setResponseActivities] = useState([]);
   const [requestOffset, setRequestOffset] = useState(0);
   const [responseOffset, setResponseOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
 
   const observer = useRef();
 
-  const fetchActivities = async (offset, type) => {
+  const fetchActivities = async (offset, type, address) => {// Verify function is called
     try {
-      setLoading(true);
-      let url = `/api/activity/${type}?offset=${offset}`
-      if (address !== "undefined" && address !== "" && address) {
-        url += `&address=${address}`
+      console.log(router.isReady)
+      console.log('address: ', address)
+      console.log(offset, type)
+      let url = `/api/activity/${type}?offset=${offset}`;
+
+      // Only add the address filter if it's present and valid
+      if (address && address.length === 42) {
+        url += `&address=${address}`;
       }
+
       const res = await fetch(url);
       if (!res.ok) {
         throw new Error('Failed to fetch data');
@@ -36,57 +40,60 @@ export default function Activity() {
       setError(err.message);
       return [];
     } finally {
-      setLoading(false);
     }
   };
 
-  const loadMoreActivities = useCallback(async () => {
-    if (!hasMore) return;
-
+  const loadMoreActivities = useCallback(async (address) => {
+    if (!hasMore || loading) return;
+    console.log('DOING LOADING')
+    console.log(requestActivities)
+    console.log(responseActivities)
+    setLoading(true);
     const [newRequests, newResponses] = await Promise.all([
-      fetchActivities(requestOffset, 'requests'),
-      fetchActivities(responseOffset, 'responses'),
+      fetchActivities(requestOffset, 'requests', address),
+      fetchActivities(responseOffset, 'responses', address),
     ]);
 
-    // Append new data to current list
     setRequestActivities((prev) => [...prev, ...newRequests]);
     setResponseActivities((prev) => [...prev, ...newResponses]);
 
-    // Update the offsets for the next batch
     setRequestOffset((prev) => prev + newRequests.length);
     setResponseOffset((prev) => prev + newResponses.length);
 
-    // Stop loading more if no new data is returned
     if (newRequests.length === 0 && newResponses.length === 0) {
       setHasMore(false);
     }
-  }, [requestOffset, responseOffset, hasMore, address]);
+      setLoading(false);
+  }, [requestOffset, responseOffset, hasMore, loading]);
 
   // Observer callback to trigger fetching more activities
   const lastActivityRef = useCallback(
     (node) => {
+      console.log('load activity ref')
+      console.log(loading)
       if (loading) return;
       if (observer.current) observer.current.disconnect();
-
+      console.log('going through')
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMoreActivities();
+        if (entries[0].isIntersecting && hasMore && router.isReady) {
+          loadMoreActivities(address);
         }
       });
 
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, loadMoreActivities]
+    [loading, hasMore, loadMoreActivities, router.isReady]
   );
 
   useEffect(() => {
-    // Initial data fetch
-    loadMoreActivities();
-  }, [address]);
-
-  if (loading && requestActivities.length === 0 && responseActivities.length === 0) {
-    return <p>Loading activities...</p>;
-  }
+    console.log('activity use effect')
+    // Reset offsets and activities when address changes
+    setRequestOffset(0);
+    setResponseOffset(0);
+    setRequestActivities([]);
+    setResponseActivities([]);
+    setHasMore(true);
+  }, [router.isReady]); // Ensure it only runs when the router is ready and the address changes
 
   if (error) {
     return <p>Error loading activities: {error}</p>;

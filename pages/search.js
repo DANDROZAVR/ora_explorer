@@ -1,4 +1,5 @@
 // pages/search.js
+// pages/search.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -44,8 +45,8 @@ export default function Search() {
           placeholder="Enter your address or request/response tx id"
         />
         <button type="submit">Search</button>
+        {error && <p className="error-message">{error}</p>}
       </form>
-      {error && <p className="error-message">{error}</p>}
 
       <style jsx>{`
         .search-page {
@@ -58,7 +59,7 @@ export default function Search() {
           top: 0;
           left: 0;
           width: 100%;
-          z-index: 1000; /* Ensure it is on top of other elements */
+          z-index: 1; /* Lower z-index than navbar */
         }
         form {
           display: flex;
@@ -68,13 +69,14 @@ export default function Search() {
           padding: 1rem;
           border-radius: 8px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          z-index: 2; /* Ensure form has a higher z-index within the search page */
         }
         input {
           padding: 0.5rem;
           font-size: 1rem;
           border: 1px solid #ddd;
           border-radius: 4px;
-          margin-bottom: 1rem;
+          margin-bottom: 0.5rem; /* Reduced margin */
           width: 300px;
         }
         button {
@@ -84,13 +86,14 @@ export default function Search() {
           border: none;
           border-radius: 4px;
           cursor: pointer;
+          margin-bottom: 0.5rem; /* Reduced margin */
         }
         button:hover {
           background-color: #005bb5;
         }
         .error-message {
           color: red;
-          margin-top: 1rem;
+          margin-top: 1rem; /* Ensure it appears below the form elements */
         }
       `}</style>
     </div>

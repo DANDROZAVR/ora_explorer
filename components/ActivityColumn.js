@@ -7,9 +7,9 @@ export default function ActivityColumn({ title, activities }) {
       <h2>{title}</h2>
       {activities.map((activity, index) => (
         <div key={index} className="activity-item">
-          <p><strong>Block:</strong> {activity.timestamp}</p>
-          <p><strong>Address:</strong> {activity.user_address}</p>
-          <p><strong>Request ID:</strong> {activity.req_id}</p>
+            <p><strong>Timestamp:</strong> {new Date(activity.timestamp * 1000).toLocaleString()}</p>
+            <p><strong>Address:</strong> {activity.user_address}</p>
+            <p><strong>Request ID:</strong> {activity.req_id}</p>
           <p><strong>Tx ID:</strong>
             <Link href={`/event/${activity.tx_id}`} legacyBehavior>
               <a className="info-link">{activity.tx_id}</a>

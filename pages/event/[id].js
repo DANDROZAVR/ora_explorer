@@ -55,7 +55,8 @@ export default function EventInfo({ event }) {
           <p><strong>Chain ID:</strong> {eventInfo.chain_id}</p>
           <p><strong>Address:</strong> {eventInfo.user_address}</p>
           <p><strong>Text:</strong> {eventInfo.text}</p>
-          <p><strong>Block Number:</strong> {eventInfo.event_number}</p>
+          <p><strong>Block Number:</strong> {eventInfo.block_number}</p>
+          <p><strong>Request id:</strong> {eventInfo.req_id}</p>
           <p><strong>Timestamp:</strong> {new Date(eventInfo.timestamp * 1000).toLocaleString()}</p>
           {oppositeInfo ? (
             <div>
